@@ -1,0 +1,493 @@
+git clone https://github.com/philnash/twilio-video-react-hooks.git
+cd twilio-video-react-hooks
+npm install
+
+cp .env.example .env
+
+APP Component : 
+
+import React from 'react';
+import './App.css';
+
+const App = () => {
+  return (
+    <div className="app">
+      <header>
+        <h1>Video Chat with Hooks</h1>
+      </header>
+      <main>
+        <p>VideoChat goes here.</p>
+      </main>
+      <footer>
+        <p>
+          Made with{' '}
+          <span role="img" aria-label="React">
+            ⚛
+          </span>{' '}
+          by <a href="https://twitter.com/philnash">philnash</a>
+        </p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
+
+The VideoChat component :
+
+import React from 'react';
+
+const VideoChat = () => {
+  return <div></div> // we'll build up our response later
+};
+
+export default VideoChat;
+
+useState :
+
+import React, { useState } from 'react';
+
+const VideoChat = () => {
+  const [username, setUsername] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [token, setToken] = useState(null);
+
+  return <div></div> // we'll build up our response later
+};
+
+import React, { useState } from 'react';
+
+const VideoChat = () => {
+  const [username, setUsername] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [token, setToken] = useState(null);
+
+  const handleUsernameChange = event => {
+    setUsername(event.target.value);
+  };
+
+  const handleRoomNameChange = event => {
+    setRoomName(event.target.value);
+  };
+
+  return <div></div> // we'll build up our response later
+};
+
+
+useCallback :
+
+import React, { useState, useCallback } from 'react';
+
+const VideoChat = () => {
+  const [username, setUsername] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [token, setToken] = useState(null);
+
+  const handleUsernameChange = useCallback(event => {
+    setUsername(event.target.value);
+  }, []);
+
+  const handleRoomNameChange = useCallback(event => {
+    setRoomName(event.target.value);
+  }, []);
+
+  return <div></div> // we'll build up our response later
+};
+
+const handleRoomNameChange = useCallback(event => {
+    setRoomName(event.target.value);
+  }, []);
+
+  const handleSubmit = useCallback(async event => {
+    event.preventDefault();
+    const data = await fetch('/video/token', {
+      method: 'POST',
+      body: JSON.stringify({
+        identity: username,
+        room: roomName
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(res => res.json());
+    setToken(data.token);
+  }, [username, roomName]);
+
+  return <div></div> // we'll build up our response later
+};
+
+  const handleLogout = useCallback(event => {
+    setToken(null);
+  }, []);
+
+  return <div></div> // we'll build up our response later
+};
+
+
+The Lobby component :
+
+import React from 'react';
+
+const Lobby = ({
+  username,
+  handleUsernameChange,
+  roomName,
+  handleRoomNameChange,
+  handleSubmit
+}) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Enter a room</h2>
+      <div>
+        <label htmlFor="name">Name:</label>
+        <input
+          type="text"
+          id="field"
+          value={username}
+          onChange={handleUsernameChange}
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="room">Room name:</label>
+        <input
+          type="text"
+          id="room"
+          value={roomName}
+          onChange={handleRoomNameChange}
+          required
+        />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export default Lobby;
+
+import React, { useState, useCallback } from 'react';
+import Lobby from './Lobby';
+
+const VideoChat = () => {
+  // ...
+
+  const handleLogout = useCallback(event => {
+    setToken(null);
+  }, []);
+  
+  let render;
+  if (token) {
+    render = (
+      <div>
+        <p>Username: {username}</p>
+        <p>Room name: {roomName}</p>
+        <p>Token: {token}</p>
+      </div>
+    );
+  } else {
+    render = (
+      <Lobby
+         username={username}
+         roomName={roomName}
+         handleUsernameChange={handleUsernameChange}
+         handleRoomNameChange={handleRoomNameChange}
+         handleSubmit={handleSubmit}
+      />
+    );
+  }
+  return render;
+};
+
+import React from 'react';
+import './App.css';
+import VideoChat from './VideoChat';
+
+const App = () => {
+  return (
+    <div className="app">
+      <header>
+        <h1>Video Chat with Hooks</h1>
+      </header>
+      <main>
+        <VideoChat />
+      </main>
+      <footer>
+        <p>
+          Made with{' '}
+          <span role="img" aria-label="React">
+            ⚛️
+          </span>{' '}
+          by <a href="https://twitter.com/philnash">philnash</a>
+        </p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
+
+
+The Room component :
+
+npm install twilio-video@^2.2.0 --save
+
+import React, { useState, useEffect } from 'react';
+import Video from 'twilio-video';
+
+const Room = ({ roomName, token, handleLogout }) => {
+
+};
+
+export default Room;
+
+const Room = ({ roomName, token, handleLogout }) => {
+  const [room, setRoom] = useState(null);
+  const [participants, setParticipants] = useState([]);
+});
+
+const Room = ({ roomName, token, handleLogout }) => {
+  const [room, setRoom] = useState(null);
+  const [participants, setParticipants] = useState([]);
+
+  const remoteParticipants = participants.map(participant => (
+    <p key={participant.sid}>{participant.identity}</p>
+  ));
+
+  return (
+    <div className="room">
+      <h2>Room: {roomName}</h2>
+      <button onClick={handleLogout}>Log out</button>
+      <div className="local-participant">
+        {room ? (
+          <p key={room.localParticipant.sid}>{room.localParticipant.identity}</p>
+        ) : (
+          ''
+        )}
+      </div>
+      <h3>Remote Participants</h3>
+      <div className="remote-participants">{remoteParticipants}</div>
+    </div>
+  );
+});
+
+import React, { useState, useCallback } from 'react';
+import Lobby from './Lobby';
+import Room from './Room';
+
+const VideoChat = () => {
+  // ...
+
+  const handleLogout = useCallback(event => {
+    setToken(null);
+  }, []);
+  
+  let render;
+  if (token) {
+    render = (
+      <Room roomName={roomName} token={token} handleLogout={handleLogout} />
+    );
+  } else {
+    render = (
+      <Lobby
+         username={username}
+         roomName={roomName}
+         handleUsernameChange={handleUsernameChange}
+         handleRoomNameChange={handleRoomNameChange}
+         handleSubmit={handleSubmit}
+      />
+    );
+  }
+  return render;
+};
+
+useEffect :
+
+  useEffect(() => {
+    const participantConnected = participant => {
+      setParticipants(prevParticipants => [...prevParticipants, participant]);
+    };
+    const participantDisconnected = participant => {
+      setParticipants(prevParticipants =>
+        prevParticipants.filter(p => p !== participant)
+      );
+    };
+    Video.connect(token, {
+      name: roomName
+    }).then(room => {
+      setRoom(room);
+      room.on('participantConnected', participantConnected);
+      room.on('participantDisconnected', participantDisconnected);
+      room.participants.forEach(participantConnected);
+    });
+  });
+
+    Video.connect(token, {
+      name: roomName
+    }).then(room => {
+      setRoom(room);
+      room.on('participantConnected', participantConnected);
+      room.participants.forEach(participantConnected);
+    });
+
+    return () => {
+      setRoom(currentRoom => {
+        if (currentRoom && currentRoom.localParticipant.state === 'connected') {
+          currentRoom.localParticipant.tracks.forEach(function(trackPublication) {
+            trackPublication.track.stop();
+          });
+          currentRoom.disconnect();
+          return null;
+        } else {
+          return currentRoom;
+        }
+      });
+    };
+  });
+
+    return () => {
+      setRoom(currentRoom => {
+        if (currentRoom && currentRoom.localParticipant.state === 'connected') {
+          currentRoom.localParticipant.tracks.forEach(function(trackPublication) {
+            trackPublication.track.stop();
+          });
+          currentRoom.disconnect();
+          return null;
+        } else {
+          return currentRoom;
+        }
+      });
+    };
+  }, [roomName, token]);
+
+The Participant component :
+
+import React, { useState, useEffect, useRef } from 'react';
+
+const Participant = ({ participant }) => {
+  const [videoTracks, setVideoTracks] = useState([]);
+  const [audioTracks, setAudioTracks] = useState([]);
+};
+
+export default Participant;
+
+const Participant = ({ participant }) => {
+  const [videoTracks, setVideoTracks] = useState([]);
+  const [audioTracks, setAudioTracks] = useState([]);
+
+  const videoRef = useRef();
+  const audioRef = useRef();
+ });
+
+const Participant = ({ participant }) => {
+  const [videoTracks, setVideoTracks] = useState([]);
+  const [audioTracks, setAudioTracks] = useState([]);
+
+  const videoRef = useRef();
+  const audioRef = useRef();
+
+  return (
+    <div className="participant">
+      <h3>{participant.identity}</h3>
+      <video ref={videoRef} autoPlay={true} />
+      <audio ref={audioRef} autoPlay={true} muted={true} />
+    </div>
+  );
+ });
+
+  const videoRef = useRef();
+  const audioRef = useRef();
+
+  useEffect(() => {
+    const trackSubscribed = track => {
+      if (track.kind === 'video') {
+        setVideoTracks(videoTracks => [...videoTracks, track]);
+      } else {
+        setAudioTracks(audioTracks => [...audioTracks, track]);
+      }
+    };
+
+    const trackUnsubscribed = track => {
+      if (track.kind === 'video') {
+        setVideoTracks(videoTracks => videoTracks.filter(v => v !== track));
+      } else {
+        setAudioTracks(audioTracks => audioTracks.filter(a => a !== track));
+      }
+    };
+
+    // more to come
+
+  const trackpubsToTracks = trackMap => Array.from(trackMap.values())
+    .map(publication => publication.track)
+    .filter(track => track !== null);
+
+  useEffect(() => {
+    const trackSubscribed = track => {
+      // implementation
+    };
+
+    const trackUnsubscribed = track => {
+      // implementation
+    };
+
+    setVideoTracks(trackpubsToTracks(participant.videoTracks));
+    setAudioTracks(trackpubsToTracks(participant.audioTracks));
+
+    participant.on('trackSubscribed', trackSubscribed);
+    participant.on('trackUnsubscribed', trackUnsubscribed);
+
+    return () => {
+      setVideoTracks([]);
+      setAudioTracks([]);
+      participant.removeAllListeners();
+    };
+  }, [participant]);
+
+  return (
+    <div className="participant">
+
+  }, [participant]);
+
+  useEffect(() => {
+    const videoTrack = videoTracks[0];
+    if (videoTrack) {
+      videoTrack.attach(videoRef.current);
+      return () => {
+        videoTrack.detach();
+      };
+    }
+  }, [videoTracks]);
+
+  return (
+    <div className="participant">
+import React, { useState, useEffect } from 'react';
+import Video from 'twilio-video';
+import Participant from './Participant';
+
+// hooks here
+
+  const remoteParticipants = participants.map(participant => (
+    <Participant key={participant.sid} participant={participant} />
+  ));
+
+  return (
+    <div className="room">
+      <h2>Room: {roomName}</h2>
+      <button onClick={handleLogout}>Log out</button>
+      <div className="local-participant">
+        {room ? (
+          <Participant
+            key={room.localParticipant.sid}
+            participant={room.localParticipant}
+          />
+        ) : (
+          ''
+        )}
+      </div>
+      <h3>Remote Participants</h3>
+      <div className="remote-participants">{remoteParticipants}</div>
+    </div>
+  );
+});
+
+
